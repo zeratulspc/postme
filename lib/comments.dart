@@ -25,42 +25,50 @@ class _CommentsState extends State<Comments> {
 
   @override
   Widget build(BuildContext context) {
-    return null;
+    return commentPage();
   }
 
 
-  void commentPage() {
-    showModalBottomSheet<void>(context: context,
+  commentPage() {
+    showBottomSheet(context: context,
         builder: (BuildContext context) {
-          return Container(
-            child: FutureBuilder(
-              future: _getComments(),
-              builder: (BuildContext context, AsyncSnapshot snapshot){
-                print(snapshot.data);
-                if(snapshot.data == null){
-                  return Container(
-                      child: Center(
-                          child: Text("Loading...")
-                      )
-                  );
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        leading: Text('User'+snapshot.data[index].toString()),
-                        title: Text(snapshot.data[index].title),
-                        subtitle: Text(snapshot.data[index].body),
-                        onTap: (){
+          return Column(
+            children: <Widget>[
+              Text('Comments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),),
+              SizedBox(height: 3.0,),
+              Container(
+                child: FutureBuilder(
+                  future: _getComments(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot){
+                    print(snapshot.data);
+                    if(snapshot.data == null){
+                      return Container(
+                          child: Center(
+                              child: Text("Loading...")
+                          )
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          //  CommentInfo(this.postId, this.id, this.name, this.email, this.body);
+                          return ListTile(
+                            leading: Text(snapshot.data[index].name),
+                            title: Text(snapshot.data[index].name),
+                            subtitle: Text(snapshot.data[index].body),
+                            onTap: (){
+                            },
+                          );
                         },
                       );
-                    },
-                  );
-                }
-              },
-            ),
+                    }
+                  },
+                ),
+              ),
+            ],
           );
-        });
+        }
+    );
   }
 }
 

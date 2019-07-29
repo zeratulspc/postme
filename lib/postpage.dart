@@ -25,6 +25,9 @@ class _PostPageState extends State<PostPage> {
     return users;
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +77,20 @@ class DetailPage extends StatelessWidget {
   final User user;
   DetailPage(this.user);
 
+  Future<List<CommentInfo>> _getComments() async {
+    var data = await http.get("https://jsonplaceholder.typicode.com/comments");
+    var jsonData = json.decode(data.body);
+    List<CommentInfo> comments = [];
+    for (var c in jsonData) {
+      CommentInfo commentInfo = CommentInfo(c["postId"], c["id"], c["name"], c["email"], c["body"]);
+      comments.add(commentInfo);
+    }
+    print(comments.length);
+    return comments;
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,6 +107,7 @@ class DetailPage extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 5),
               child:  Text(user.body, style: TextStyle(fontSize: 16,),),
+
             ),
           ],
         ),

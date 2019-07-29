@@ -9,19 +9,11 @@ class DropDownButton extends StatefulWidget {
 class _DropDownButtonState extends State<DropDownButton> {
   var _value = "0";
 
+
   DropdownButton _normalDown() => DropdownButton<String>(
     items: [
       dropItem('0', '???'),
-      dropItem('1', 'user1'),
-      dropItem('2', 'user2'),
-      dropItem('3', 'user3'),
-      dropItem('4', 'user4'),
-      dropItem('5', 'user5'),
-      dropItem('6', 'user6'),
-      dropItem('7', 'user7'),
-      dropItem('8', 'user8'),
-      dropItem('9', 'user9'),
-      dropItem('10', 'user10'),
+      lotOfItem(),
     ],
     onChanged: (value) {
       setState(() {
@@ -64,11 +56,19 @@ class _DropDownButtonState extends State<DropDownButton> {
     );
   }
 
+  final items = [];
+
+  lotOfItem(){
+    for(int i = 1;i <= 10; i++){
+      items.add(dropItem(i.toString(), 'User'+i.toString()));
+    }
+    return items;
+  }
+
 
 
   dropItem(String value, String text) {
     return DropdownMenuItem<String>(
-
       value: value,
       child: Text(
         text,
