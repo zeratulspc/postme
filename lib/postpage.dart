@@ -5,23 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:postme/comments.dart';
+import 'package:postme/loading.dart';
 
-class PostPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _PostPageState createState() => _PostPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _PostPageState extends State<PostPage> {
+class _HomePageState extends State<HomePage> {
 
-  Future<List<User>> _getUsers() async {
-    var data = await http.get("https://jsonplaceholder.typicode.com/posts");
-    var jsonData = json.decode(data.body);
-    List<User> users = [];
+  Future<List<Posts>> _getUsers() async {
+    var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
+    var jsonData = json.decode(postData.body);
+    List<Posts> users = [];
     for(var u in jsonData){
-      User user = User(u["userId"], u["id"], u["title"], u["body"], );
+      Posts user = Posts(u["userId"], u["id"], u["title"], u["body"], );
       users.add(user);
     }
-    print(users.length);
+    print('users.length:'+users.length.toString());
     return users;
   }
 
@@ -74,21 +75,8 @@ class _PostPageState extends State<PostPage> {
 
 class DetailPage extends StatelessWidget {
 
-  final User user;
+  final Posts user;
   DetailPage(this.user);
-
-  Future<List<CommentInfo>> _getComments() async {
-    var data = await http.get("https://jsonplaceholder.typicode.com/comments");
-    var jsonData = json.decode(data.body);
-    List<CommentInfo> comments = [];
-    for (var c in jsonData) {
-      CommentInfo commentInfo = CommentInfo(c["postId"], c["id"], c["name"], c["email"], c["body"]);
-      comments.add(commentInfo);
-    }
-    print(comments.length);
-    return comments;
-  }
-
 
 
   @override
@@ -107,7 +95,10 @@ class DetailPage extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 5),
               child:  Text(user.body, style: TextStyle(fontSize: 16,),),
-
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0),
+              child: Comments(),
             ),
           ],
         ),
@@ -118,12 +109,12 @@ class DetailPage extends StatelessWidget {
 }
 
 
-class User {
+class Posts {
   final int userId;
   final int id;
   final String title;
   final String body;
 
-  User(this.userId, this.id, this.title, this.body);
+  Posts(this.userId, this.id, this.title, this.body);
 
 }

@@ -12,14 +12,14 @@ class Comments extends StatefulWidget {
 class _CommentsState extends State<Comments> {
 
   Future<List<CommentInfo>> _getComments() async {
-    var data = await http.get("https://jsonplaceholder.typicode.com/comments");
-    var jsonData = json.decode(data.body);
+    var commentData = await http.get("https://jsonplaceholder.typicode.com/comments");
+    var jsonData = json.decode(commentData.body);
     List<CommentInfo> comments = [];
     for (var c in jsonData) {
       CommentInfo commentInfo = CommentInfo(c["postId"], c["id"], c["name"], c["email"], c["body"]);
       comments.add(commentInfo);
     }
-    print(comments.length);
+    print('CommentsLength'+comments.length.toString());
     return comments;
   }
 
@@ -29,46 +29,51 @@ class _CommentsState extends State<Comments> {
   }
 
 
-  commentPage() {
-    showBottomSheet(context: context,
-        builder: (BuildContext context) {
+  Widget commentPage() {
           return Column(
             children: <Widget>[
               Text('Comments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),),
               SizedBox(height: 3.0,),
               Container(
-                child: FutureBuilder(
-                  future: _getComments(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot){
-                    print(snapshot.data);
-                    if(snapshot.data == null){
-                      return Container(
-                          child: Center(
-                              child: Text("Loading...")
-                          )
-                      );
-                    } else {
-                      return ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          //  CommentInfo(this.postId, this.id, this.name, this.email, this.body);
-                          return ListTile(
-                            leading: Text(snapshot.data[index].name),
-                            title: Text(snapshot.data[index].name),
-                            subtitle: Text(snapshot.data[index].body),
-                            onTap: (){
+                child: Padding(
+                  padding: EdgeInsets.all(2.0),
+                  child: FutureBuilder(
+                    future: _getComments(),
+                    builder: (BuildContext context, AsyncSnapshot commentsSnapshot){
+                      print("commetdatapart");
+                      print(commentsSnapshot.data);
+                      if(commentsSnapshot.data == null){
+                        return Container(
+                            width: 200,
+                            height: 200,
+                            child: Center(
+                                child: Text("Loading...")
+                            )
+                        );
+                      } else {
+                        return Container(
+                          width: 380,
+                          height: 430,
+                          child: ListView.builder(
+                            itemCount: commentsSnapshot.data.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                leading: Icon(Icons.person),
+                                title: Text(commentsSnapshot.data[index].name),
+                                subtitle: Text(commentsSnapshot.data[index].body),
+                                onTap: (){
+                                },
+                              );
                             },
-                          );
-                        },
-                      );
-                    }
-                  },
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
             ],
           );
-        }
-    );
   }
 }
 

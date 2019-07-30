@@ -1,25 +1,36 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:postme/postpage.dart';
+import 'package:postme/loading.dart';
 
 class DropDownButton extends StatefulWidget {
+
   @override
   _DropDownButtonState createState() => _DropDownButtonState();
 }
 
 class _DropDownButtonState extends State<DropDownButton> {
-  var _value = "0";
+  final items =  List<DropdownMenuItem<int>>();
+  var _value = 0;
+  SharedPreferences sharedPreferences;
 
 
-  DropdownButton _normalDown() => DropdownButton<String>(
-    items: [
-      dropItem('0', '???'),
-      lotOfItem(),
-    ],
+  @override
+  void initState() {
+    super.initState();
+    items.add(dropItem(0, '???'));
+    items.addAll(lotOfItem());
+    getValue();
+  }
+
+  DropdownButton _normalDown() => DropdownButton<int>(
+    items: this.items,
     onChanged: (value) {
       setState(() {
         _value = value;
+        setValue();
       });
-      if(int.parse(_value)>0) {
+      if(_value >0) {
         _showDialog();
       }
     },
@@ -32,7 +43,7 @@ class _DropDownButtonState extends State<DropDownButton> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Alert'),
-          content: Text('Do you want to start PostME! with User'+_value+'?',),
+          content: Text('Do you want to start PostME! with User'+_value.toString()+'?',),
           actions: <Widget>[
             FlatButton(
               child: Text('CANCEL'),
@@ -44,10 +55,7 @@ class _DropDownButtonState extends State<DropDownButton> {
               child: Text('CONFIRM'),
               onPressed: (){
                 Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PostPage()),
-                );
+                Navigator.of(context).pushReplacementNamed('/home');
               },
             ),
           ],
@@ -56,19 +64,16 @@ class _DropDownButtonState extends State<DropDownButton> {
     );
   }
 
-  final items = [];
-
-  lotOfItem(){
+  List<DropdownMenuItem<int>> lotOfItem(){
+    List<DropdownMenuItem<int>> list = List();
     for(int i = 1;i <= 10; i++){
-      items.add(dropItem(i.toString(), 'User'+i.toString()));
+      list.add(dropItem(i, 'User'+i.toString()));
     }
-    return items;
+    return list;
   }
 
-
-
-  dropItem(String value, String text) {
-    return DropdownMenuItem<String>(
+  dropItem(int value, String text) {
+    return DropdownMenuItem<int>(
       value: value,
       child: Text(
         text,
@@ -90,6 +95,22 @@ class _DropDownButtonState extends State<DropDownButton> {
       ),
     );
   }
+
+  setValue() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      sharedPreferences.setInt("value", _value);
+    });
+  }
+
+  getValue() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      _value = sharedPreferences.getInt("value") ?? 0;
+    });
+  }
+
+
 
 
 }
