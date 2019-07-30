@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:postme/comments.dart';
+import 'package:postme/edit.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,6 +19,10 @@ class _HomePageState extends State<HomePage> {
   Future<List<Posts>> _getUsers() async {
     var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
     var jsonData = json.decode(postData.body);
+
+    //TODO : add AddedData to jsonDATA or postDATA (작성파트)
+    //TODO : 수정 파트
+
     List<Posts> users = [];
     for(var u in jsonData){
       Posts user = Posts(u["userId"], u["id"], u["title"], u["body"], );
@@ -26,6 +32,21 @@ class _HomePageState extends State<HomePage> {
     return users;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    print('HomePage');
+  }
+
+  var _value = 0;
+
+  SharedPreferences sharedPreferences;
+  getValue() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      _value = sharedPreferences.getInt("value") ?? 0;
+    });
+  }
 
 
 
@@ -38,7 +59,7 @@ class _HomePageState extends State<HomePage> {
             IconButton(
             icon: Icon(Icons.border_color),
             onPressed: () {
-              //Navigator.of(context).pushNamed('/setting');
+                Navigator.of(context).pushNamed('/edit');
               },
             ),
             IconButton(

@@ -55,6 +55,7 @@ class _DropDownButtonState extends State<DropDownButton> {
               child: Text('CONFIRM'),
               onPressed: (){
                 Navigator.of(context).pop();
+                Navigator.of(context).pop();
                 Navigator.of(context).pushReplacementNamed('/home');
               },
             ),
