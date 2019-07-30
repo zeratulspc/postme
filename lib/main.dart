@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:postme/dropdown.dart';
 import 'package:postme/postpage.dart';
 import 'package:postme/loading.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:postme/setting.dart';
 
 final routes = {
   '/login': (BuildContext context) => LoginPage(),
   '/home': (BuildContext context) => HomePage(),
   '/Loading': (BuildContext context) => Loading(),
   '/checkPage': (BuildContext context) => SplashScreen(),
+  '/setting' : (BuildContext context) => Setting(),
 };
 
 void main() async {

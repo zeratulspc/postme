@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:postme/comments.dart';
-import 'package:postme/loading.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -34,6 +34,20 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar:AppBar(
         title:Text('Posts'),
+          actions: <Widget>[
+            IconButton(
+            icon: Icon(Icons.border_color),
+            onPressed: () {
+              //Navigator.of(context).pushNamed('/setting');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/setting');
+              },
+            ),
+          ],
       ),
       body: Container(
         child: FutureBuilder(
@@ -51,7 +65,12 @@ class _HomePageState extends State<HomePage> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    leading: Text('User'+snapshot.data[index].userId.toString()),
+                    leading: Column(
+                      children: <Widget>[
+                        Icon(Icons.person,),
+                        Text('User'+snapshot.data[index].userId.toString()),
+                      ],
+                    ),
                     title: Text(snapshot.data[index].title),
                     subtitle: Text(snapshot.data[index].body),
                     onTap: (){

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:postme/dropdown.dart';
-import 'package:postme/postpage.dart';
-import 'package:postme/main.dart';
+import 'package:postme/setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -101,5 +100,8 @@ class _SplashScreenState extends State<SplashScreen> {
     }else {
       defaultHome = LoginPage();
     }
+    userValue = valueForCheck;
   }
+
+
 }
