@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:postme/postpage.dart';
 
-String titleStr = "";
-String bodyStr = "";
+String titleStr;
+String bodyStr;
 
 
 class EditPage extends StatefulWidget {
@@ -80,6 +81,8 @@ class EditPageState extends State<EditPage> {
   }
 
   void submit(String titleText, String bodyText) {
+
+    
     setState(() {
       titleStr = titleText;
       bodyStr = bodyText;
@@ -101,8 +104,8 @@ class EditPageState extends State<EditPage> {
 class AddedInfo {
   int userId;
   int id;
-  String title = titleStr;
-  String body = bodyStr;
+  String title;
+  String body;
 
   AddedInfo(this.userId, this.id, this.title, this.body);
 }

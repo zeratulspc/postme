@@ -9,41 +9,58 @@ import 'package:postme/edit.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
+
+int userValue;
+
+Future<List<Posts>> _getUsers() async {
+  var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
+  var jsonData = json.decode(postData.body);
+
+
+  List<Posts> users = [];
+
+  if(titleStr != null) {
+    Posts added = Posts(userValue, 1, titleStr, bodyStr);
+    users.add(added);
+  }
+
+  for(var u in jsonData){
+    Posts user = Posts(u["userId"], u["id"], u["title"], u["body"], );
+    users.add(user);
+  }
+
+
+  print('users.length:'+users.length.toString());
+  return users;
+}
+
+
+
+
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+
 class _HomePageState extends State<HomePage> {
-
-  Future<List<Posts>> _getUsers() async {
-    var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
-    var jsonData = json.decode(postData.body);
-
-
-    List<Posts> users = [];
-
-    for(var u in jsonData){
-      Posts user = Posts(u["userId"], u["id"], u["title"], u["body"], );
-      users.add(user);
-    }
-    print('users.length:'+users.length.toString());
-    return users;
-  }
 
   @override
   void initState() {
+    getValue();
     super.initState();
     print('HomePage');
   }
 
-  var _value = 0;
 
   SharedPreferences sharedPreferences;
   getValue() async {
     sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      _value = sharedPreferences.getInt("value") ?? 0;
+      userValue = sharedPreferences.getInt("value") ?? 0;
     });
   }
 
@@ -157,3 +174,4 @@ class Posts {
   Posts(this.userId, this.id, this.title, this.body);
 
 }
+

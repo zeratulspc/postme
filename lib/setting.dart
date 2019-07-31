@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:postme/postpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 int userValue;
@@ -10,6 +11,14 @@ class Setting extends StatefulWidget {
 class SettingState extends State<Setting> {
 
   SharedPreferences sharedPreferences;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getValue();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,7 @@ class SettingState extends State<Setting> {
                   color: Colors.purple),),
           ),
           ListTile(
-            title: Text('You are User$userValue'),
+            title: Text('You are User$preferences'),
             subtitle: Text('Quit'),
             onTap: () {
               _showDialog();
@@ -73,8 +82,12 @@ class SettingState extends State<Setting> {
             FlatButton(
               child: Text('CONFIRM'),
               onPressed: (){
+                print('1 $userValue');
+                print('1'+preferences);
                 cleanValue();
                 Navigator.of(context).pushNamedAndRemoveUntil('/checkPage', (route)=>false);
+                print('2 $userValue');
+                print('2'+preferences);
               },
             ),
           ],
@@ -86,6 +99,13 @@ class SettingState extends State<Setting> {
   cleanValue() async {
     sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setInt("value", 0);
+  }
+
+  String preferences;
+
+  getValue() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+     preferences = sharedPreferences.getInt("value").toString();
   }
 
 }
