@@ -25,6 +25,8 @@ class EditPageState extends State<EditPage> {
             onPressed: () {
               Navigator.of(context).pop();
               submit(titleController.text, bodyController.text);
+              print('Title : '+titleStr);
+              print('Body : '+bodyStr);
             },
           )
         ],

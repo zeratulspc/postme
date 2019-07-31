@@ -73,10 +73,8 @@ class SettingState extends State<Setting> {
             FlatButton(
               child: Text('CONFIRM'),
               onPressed: (){
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
                 cleanValue();
-                Navigator.of(context).pushReplacementNamed('/checkPage');
+                Navigator.of(context).pushNamedAndRemoveUntil('/checkPage', (route)=>false);
               },
             ),
           ],

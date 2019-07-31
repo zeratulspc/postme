@@ -20,10 +20,9 @@ class _HomePageState extends State<HomePage> {
     var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
     var jsonData = json.decode(postData.body);
 
-    //TODO : add AddedData to jsonDATA or postDATA (작성파트)
-    //TODO : 수정 파트
 
     List<Posts> users = [];
+
     for(var u in jsonData){
       Posts user = Posts(u["userId"], u["id"], u["title"], u["body"], );
       users.add(user);
