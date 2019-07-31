@@ -15,7 +15,6 @@ class SettingState extends State<Setting> {
   @override
   void initState() {
     super.initState();
-
     getValue();
   }
 
@@ -35,7 +34,7 @@ class SettingState extends State<Setting> {
                   color: Colors.purple),),
           ),
           ListTile(
-            title: Text('You are User$preferences'),
+            title: Text('You are User$userValuePost'),
             subtitle: Text('Quit'),
             onTap: () {
               _showDialog();

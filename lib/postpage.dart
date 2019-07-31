@@ -12,17 +12,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-int userValue;
+int userValuePost;
 
 Future<List<Posts>> _getUsers() async {
   var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
   var jsonData = json.decode(postData.body);
 
 
-  List<Posts> users = [];
+  List<Posts> users = []; // <- 얘를 밖으로 빼낸 다음에, JSON을 불러오는 작업을  딱 한번만 해야함(중복방지)
 
   if(titleStr != null) {
-    Posts added = Posts(userValue, 1, titleStr, bodyStr);
+    Posts added = Posts(userValuePost, 1, titleStr, bodyStr);
     users.add(added);
   }
 
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
   getValue() async {
     sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      userValue = sharedPreferences.getInt("value") ?? 0;
+      userValuePost = sharedPreferences.getInt("value") ?? 0;
     });
   }
 
