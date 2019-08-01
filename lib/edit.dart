@@ -1,38 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:postme/postpage.dart';
 
-String titleStr;
-String bodyStr;
-
 
 class EditPage extends StatefulWidget {
+  final List<Posts> post;
+  final callCase;
   final index;
-  EditPage({Key key, this.index}) : super(key: key);
+  EditPage({Key key, this.index, this.callCase, this.post}) : super(key: key);
 
   @override
-  EditPageState createState() => EditPageState();
+  EditPageState createState() => EditPageState(callCase:  callCase, index:  index, post:  post);
 }
 
 class EditPageState extends State<EditPage> {
+  final List<Posts> post;
+  final callCase; // 1= add, 2=edit
+  final index;
+  EditPageState({this.index, this.callCase, this.post});
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
 
+  Widget caseAppbar() {
+    return callCase == 1 ? AppBar(title: Text('New Post'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          color: Colors.white,
+          onPressed: () {
+            submit(titleController.text, bodyController.text);
+            Navigator.pop(context, addedPost);
+          },
+        )
+      ],
+    ) : AppBar(title: Text('New Post'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.border_color),
+          color: Colors.white,
+          onPressed: () {
+            editThis(titleController.text, bodyController.text, index);
+            Navigator.pop(context, addedPost);
+          },
+        )
+      ],
+    );
+  }
+
+  var editedPosts;
+
+  void editThis(String title, String body, index) {
+    editedPosts = Posts(userId: post[index].userId, id: post[index].userId, title: title, body: body);
+    setState(() {
+      post[index] = editedPosts;
+      _titleSubmitted(title);
+      _bodySubmitted(body);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('New Post'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.border_color),
-            color: Colors.white,
-            onPressed: () {
-              submit(titleController.text, bodyController.text);
-              Navigator.pop(context, addedPost);
-            },
-          )
-        ],
-      ),
+      appBar: caseAppbar(),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -79,16 +108,11 @@ class EditPageState extends State<EditPage> {
 
   }
 
-
-
   var addedPost;
-
 
   void submit(String titleText, String bodyText) {
     addedPost = Posts(userId: userValuePost, id: 1, title: titleText, body: bodyText);
     setState(() {
-      titleStr = titleText;
-      bodyStr = bodyText;
       _titleSubmitted(titleText);
       _bodySubmitted(bodyText);
     });
@@ -103,13 +127,4 @@ class EditPageState extends State<EditPage> {
     bodyController.clear();
   }
 
-}
-
-class AddedInfo {
-  int userId;
-  int id;
-  String title;
-  String body;
-
-  AddedInfo(this.userId, this.id, this.title, this.body);
 }

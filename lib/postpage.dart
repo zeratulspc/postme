@@ -70,6 +70,8 @@ class _HomePageState extends State<HomePage> {
       });
     });
   }
+
+
   SharedPreferences sharedPreferences;
   getValue() async {
     sharedPreferences = await SharedPreferences.getInstance();
@@ -80,7 +82,7 @@ class _HomePageState extends State<HomePage> {
 
   _openEditPage(BuildContext context) async {
     final Posts addedPost = await Navigator.push(
-      context , MaterialPageRoute(builder: (context) => EditPage())
+      context , MaterialPageRoute(builder: (context) => EditPage(callCase: 1,))
     );
     posts.insert(0, addedPost);
   }
@@ -92,7 +94,7 @@ class _HomePageState extends State<HomePage> {
         title:Text('Posts'),
           actions: <Widget>[
             IconButton(
-            icon: Icon(Icons.border_color),
+            icon: Icon(Icons.add),
             onPressed: () {
               _openEditPage(context);
               },
@@ -169,7 +171,6 @@ class PostsListsState extends State<PostsLists> {
 
 
 class DetailPage extends StatelessWidget {
-
   final List<Posts> post;
   final index;
 
@@ -177,8 +178,12 @@ class DetailPage extends StatelessWidget {
 
 
 
-  openEditPage(BuildContext context, index) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => EditPage(index: index,)));
+  openEditPage(BuildContext context, index) async {
+    final Posts editedPosts = await Navigator.push(context, MaterialPageRoute(
+        builder: (context) =>
+            EditPage(index: index, callCase: 2, post: post,)));
+    // change edited
+    if (editedPosts != null) {}
   }
 
   @override
