@@ -17,6 +17,7 @@ final routes = {
 };
 
 void main() {
+        fetchPosts(http.Client());
         runApp(MaterialApp(
           title: 'Post ME!',
           theme: ThemeData(

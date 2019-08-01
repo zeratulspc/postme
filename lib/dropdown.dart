@@ -1,7 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:postme/postpage.dart';
-import 'package:postme/loading.dart';
 
 class DropDownButton extends StatefulWidget {
 

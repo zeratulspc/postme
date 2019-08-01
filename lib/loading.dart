@@ -14,7 +14,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _status = 'no-action';
 
   @override
   Widget build(BuildContext context) {
