@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:postme/comments.dart';
 import 'package:postme/edit.dart';
+
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,32 +16,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 int userValuePost;
 
-Future<List<Posts>> _getUsers() async {
-  var postData = await http.get("https://jsonplaceholder.typicode.com/posts");
-  var jsonData = json.decode(postData.body);
+Future<List<Posts>> fetchPosts(http.Client client) async {
+  final response =
+  await client.get('https://jsonplaceholder.typicode.com/posts');
 
+  return compute(parsePosts, response.body);
+}
 
-  List<Posts> users = [];
-
-  if(titleStr != null) {
-    Posts added = Posts(userValuePost, 1, titleStr, bodyStr);
-    users.add(added);
-  }
-
-  for(var u in jsonData){
-    Posts user = Posts(u["userId"], u["id"], u["title"], u["body"], );
-    users.add(user);
-  }
-
-
-  print('users.length:'+users.length.toString());
-  return users;
+List<Posts> parsePosts(String responseBody) {
+  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
+  return parsed.map<Posts>((json) => Posts.fromJson(json)).toList();
 }
 
 
-  List<Posts> posts = [];
+class Posts {
+  final int userId;
+  final int id;
+  final String title;
+  final String body;
 
+  Posts({this.userId, this.id, this.title, this.body});
 
+  factory Posts.fromJson(Map<String, dynamic> json) {
+    return Posts(
+      userId : json['userId'] as int,
+      id : json['id'] as int,
+      title :json['title'] as String,
+      body : json['body'] as String,
+    );
+  }
+
+}
 
 
 
@@ -48,18 +55,21 @@ class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
-
-
 class _HomePageState extends State<HomePage> {
+  List<Posts> posts = List();
 
   @override
   void initState() {
     getValue();
     super.initState();
     print('HomePage');
+    fetchPosts(http.Client()).then((list){
+      setState((){
+        posts.addAll(list);
+        print(posts.length);
+      });
+    });
   }
-
-
   SharedPreferences sharedPreferences;
   getValue() async {
     sharedPreferences = await SharedPreferences.getInstance();
@@ -68,6 +78,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  _openEditPage(BuildContext context) async {
+    final Posts addedPost = await Navigator.push(
+      context , MaterialPageRoute(builder: (context) => EditPage())
+    );
+    posts.insert(0, addedPost);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +94,7 @@ class _HomePageState extends State<HomePage> {
             IconButton(
             icon: Icon(Icons.border_color),
             onPressed: () {
-                Navigator.of(context).pushNamed('/edit');
+              _openEditPage(context);
               },
             ),
             IconButton(
@@ -89,93 +105,127 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
       ),
-      body: Container(
-        child: FutureBuilder(
-          future: _getUsers(),
-          builder: (BuildContext context, AsyncSnapshot snapshot){
-            print(snapshot.data);
-            if(snapshot.data == null){
-              return Container(
-                  child: Center(
-                      child: Text("Loading...")
-                  )
-              );
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    leading: Column(
-                      children: <Widget>[
-                        Icon(Icons.person,),
-                        Text('User'+snapshot.data[index].userId.toString()),
-                        Text('User'+users.data[index].userId.toString()),
-                      ],
-                    ),
-                    title: Text(snapshot.data[index].title),
-                    subtitle: Text(snapshot.data[index].body),
-                    onTap: (){
-
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => DetailPage(snapshot.data[index]))
-                      );
-
-                    },
-                  );
-                },
-              );
-            }
-          },
-        ),
-      ),
+      body: PostsLists(posts: posts,),
     );
+
   }
+
+}
+
+class PostsLists extends StatefulWidget {
+  final posts;
+  const PostsLists({ Key key, this.posts}) : super(key : key);
+
+  @override
+  PostsListsState createState() => PostsListsState(thePosts: posts);
+
+}
+
+class PostsListsState extends State<PostsLists> {
+  List<Posts> thePosts;
+
+  PostsListsState({this.thePosts});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: thePosts?.length ?? 0,
+        itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+            leading: Column(
+              children: <Widget>[
+                Icon(Icons.person,),
+                Text('User'+thePosts[index].userId.toString()),
+              ],
+            ),
+            title: Text(thePosts[index].title),
+            subtitle: Text(thePosts[index].body),
+            onTap: (){
+              openDetailPage(context, thePosts, index);
+            },
+          );
+        }
+    );
+
+}
+  openDetailPage(BuildContext context, List<Posts> post, index) async {
+    final indexB = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => DetailPage(post, index))
+    );
+    post.removeAt(indexB);
+  }
+
+
+/*
+      _openEditPage(BuildContext context) async {
+    final Posts addedPost = await Navigator.push(
+      context , MaterialPageRoute(builder: (context) => EditPage())
+    );
+    posts.insert(0, addedPost);
+  }
+     */
 }
 
 
 class DetailPage extends StatelessWidget {
 
-  final Posts user;
-  DetailPage(this.user);
+  final List<Posts> post;
+  final index;
 
+  DetailPage(this.post, this.index);
+
+
+
+  openEditPage(BuildContext context, index) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => EditPage(index: index,)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Detail'),
-        ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: Text(user.title, style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.edit),
+              color: Colors.white,
+              onPressed: () {
+                openEditPage(context, index);
+              },
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child:  Text(user.body, style: TextStyle(fontSize: 16,),),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: Comments(),
+            IconButton(
+              icon: Icon(Icons.delete),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pop(context, index);
+              },
             ),
           ],
         ),
-      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Text(post[index].title, style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child:  Text(post[index].body, style: TextStyle(fontSize: 16,),),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Comments(),
+              ),
+            ],
+          ),
+        ),
+      )
     );
   }
 
 }
 
-
-class Posts {
-  final int userId;
-  final int id;
-  final String title;
-  final String body;
-
-  Posts(this.userId, this.id, this.title, this.body);
-
-}
 

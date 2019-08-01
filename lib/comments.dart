@@ -40,8 +40,6 @@ class _CommentsState extends State<Comments> {
                   child: FutureBuilder(
                     future: _getComments(),
                     builder: (BuildContext context, AsyncSnapshot commentsSnapshot){
-                      print("commetdatapart");
-                      print(commentsSnapshot.data);
                       if(commentsSnapshot.data == null){
                         return Container(
                             width: 200,

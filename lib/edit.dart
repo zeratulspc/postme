@@ -6,6 +6,9 @@ String bodyStr;
 
 
 class EditPage extends StatefulWidget {
+  final index;
+  EditPage({Key key, this.index}) : super(key: key);
+
   @override
   EditPageState createState() => EditPageState();
 }
@@ -24,10 +27,8 @@ class EditPageState extends State<EditPage> {
             icon: Icon(Icons.border_color),
             color: Colors.white,
             onPressed: () {
-              Navigator.of(context).pop();
               submit(titleController.text, bodyController.text);
-              print('Title : '+titleStr);
-              print('Body : '+bodyStr);
+              Navigator.pop(context, addedPost);
             },
           )
         ],
@@ -69,8 +70,6 @@ class EditPageState extends State<EditPage> {
                     onSubmitted: _bodySubmitted,
                 ),
               ),
-                Text('Title : $titleStr'),
-                Text('Body : $bodyStr'),
               ],
             ),
         ),
@@ -80,8 +79,13 @@ class EditPageState extends State<EditPage> {
 
   }
 
-  void submit(String titleText, String bodyText) {
 
+
+  var addedPost;
+
+
+  void submit(String titleText, String bodyText) {
+    addedPost = Posts(userId: userValuePost, id: 1, title: titleText, body: bodyText);
     setState(() {
       titleStr = titleText;
       bodyStr = bodyText;
@@ -89,6 +93,7 @@ class EditPageState extends State<EditPage> {
       _bodySubmitted(bodyText);
     });
   }
+
 
   void _titleSubmitted(String titleText) {
     titleController.clear();
