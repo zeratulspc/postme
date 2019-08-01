@@ -19,7 +19,7 @@ Future<List<Posts>> _getUsers() async {
   var jsonData = json.decode(postData.body);
 
 
-  List<Posts> users = []; // <- 얘를 밖으로 빼낸 다음에, JSON을 불러오는 작업을  딱 한번만 해야함(중복방지)
+  List<Posts> users = [];
 
   if(titleStr != null) {
     Posts added = Posts(userValuePost, 1, titleStr, bodyStr);
@@ -35,6 +35,10 @@ Future<List<Posts>> _getUsers() async {
   print('users.length:'+users.length.toString());
   return users;
 }
+
+
+  List<Posts> posts = [];
+
 
 
 
@@ -63,7 +67,6 @@ class _HomePageState extends State<HomePage> {
       userValuePost = sharedPreferences.getInt("value") ?? 0;
     });
   }
-
 
 
   @override
@@ -106,6 +109,7 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                         Icon(Icons.person,),
                         Text('User'+snapshot.data[index].userId.toString()),
+                        Text('User'+users.data[index].userId.toString()),
                       ],
                     ),
                     title: Text(snapshot.data[index].title),

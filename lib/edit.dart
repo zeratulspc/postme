@@ -82,7 +82,6 @@ class EditPageState extends State<EditPage> {
 
   void submit(String titleText, String bodyText) {
 
-    
     setState(() {
       titleStr = titleText;
       bodyStr = bodyText;
