@@ -4,7 +4,6 @@ import 'package:postme/loading.dart';
 import 'package:postme/setting.dart';
 import 'package:postme/edit.dart';
 
-import 'package:http/http.dart' as http;
 
 
 final routes = {
@@ -17,7 +16,6 @@ final routes = {
 };
 
 void main() {
-        fetchPosts(http.Client());
         runApp(MaterialApp(
           title: 'Post ME!',
           theme: ThemeData(

@@ -10,6 +10,7 @@ import 'package:postme/edit.dart';
 
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:random_color/random_color.dart';
 
 
 
@@ -48,9 +49,6 @@ class Posts {
 
 }
 
-
-
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -83,10 +81,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   _openEditPage(BuildContext context) async {
-    final Posts addedPost = await Navigator.push(
+    final Posts receivedPosts = await Navigator.push(
       context , MaterialPageRoute(builder: (context) => EditPage(callCase: 1,))
     );
-    posts.insert(0, addedPost);
+    posts.insert(0, receivedPosts);
   }
 
   @override
@@ -130,6 +128,8 @@ class PostsListsState extends State<PostsLists> {
 
   PostsListsState({this.thePosts});
 
+  RandomColor _randomColor = RandomColor();
+
   _refreshAction() {
     setState(() {
     });
@@ -143,7 +143,8 @@ class PostsListsState extends State<PostsLists> {
         return ListTile(
             leading: Column(
               children: <Widget>[
-                Icon(Icons.person,),
+                Icon(Icons.person,
+                color: _randomColor.randomColor(),),
                 Text('User'+thePosts[index].userId.toString()),
               ],
             ),
@@ -186,6 +187,8 @@ class _DetailPage extends State<DetailPage> {
 
   _DetailPage(this.post, this.index);
 
+  //userValuePost
+
   @override
   void initState() {
     super.initState();
@@ -223,6 +226,27 @@ class _DetailPage extends State<DetailPage> {
     );
   }
 
+  Widget caseAppbar() {
+    return userValuePost ==  post[index].userId ? AppBar(
+      title: Text('Detail'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.edit),
+          color: Colors.white,
+          onPressed: () {
+            openEditPage(context, index);
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.delete),
+          color: Colors.white,
+          onPressed: () {
+            _checkDelete();
+          },
+        ),
+      ],
+    ) : AppBar(title: Text('Detail'));
+  }
 
   openEditPage(BuildContext context, index) async {
     final Posts editedPosts = await Navigator.push(context, MaterialPageRoute(
@@ -236,25 +260,7 @@ class _DetailPage extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Detail'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.edit),
-              color: Colors.white,
-              onPressed: () {
-                openEditPage(context, index);
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.delete),
-              color: Colors.white,
-              onPressed: () {
-                _checkDelete();
-              },
-            ),
-          ],
-        ),
+        appBar: caseAppbar(),
       body: SingleChildScrollView(
         child: Center(
           child: Column(

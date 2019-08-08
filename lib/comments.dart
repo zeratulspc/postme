@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:random_color/random_color.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,6 +11,9 @@ class Comments extends StatefulWidget {
 }
 
 class _CommentsState extends State<Comments> {
+
+  RandomColor _randomColor = RandomColor();
+
 
   Future<List<CommentInfo>> _getComments() async {
     var commentData = await http.get("https://jsonplaceholder.typicode.com/comments");
@@ -56,7 +60,13 @@ class _CommentsState extends State<Comments> {
                             itemCount: commentsSnapshot.data.length,
                             itemBuilder: (BuildContext context, int index) {
                               return ListTile(
-                                leading: Icon(Icons.person),
+                                leading: Column(
+                                  children: <Widget>[
+                                  Icon(Icons.person,
+                                    color: _randomColor.randomColor(),),
+                                  Text('User'+commentsSnapshot.data[index].id.toString()),
+                                  ],
+                                  ),
                                 title: Text(commentsSnapshot.data[index].name),
                                 subtitle: Text(commentsSnapshot.data[index].body),
                                 onTap: (){
