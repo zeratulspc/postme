@@ -72,6 +72,8 @@ class _HomePageState extends State<HomePage> {
   }
 
 
+
+
   SharedPreferences sharedPreferences;
   getValue() async {
     sharedPreferences = await SharedPreferences.getInstance();
@@ -128,6 +130,10 @@ class PostsListsState extends State<PostsLists> {
 
   PostsListsState({this.thePosts});
 
+  _refreshAction() {
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,29 +165,70 @@ class PostsListsState extends State<PostsLists> {
   }
 
 
-/*
-      _openEditPage(BuildContext context) async {
-    final Posts addedPost = await Navigator.push(
-      context , MaterialPageRoute(builder: (context) => EditPage())
-    );
-    posts.insert(0, addedPost);
-  }
-     */
 }
 
-
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final List<Posts> post;
   final index;
 
   DetailPage(this.post, this.index);
 
+  @override
+  _DetailPage createState() => _DetailPage(post, index);
+
+
+}
+
+
+class _DetailPage extends State<DetailPage> {
+  final List<Posts> post;
+  final index;
+
+  _DetailPage(this.post, this.index);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  _refreshAction() {
+    setState(() {
+    });
+  }
+
+  void _checkDelete() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: Text('Do you want to Delete?',),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('CANCEL'),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('CONFIRM'),
+              onPressed: (){
+                Navigator.of(context).pop();
+                Navigator.pop(context, index);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 
   openEditPage(BuildContext context, index) async {
     final Posts editedPosts = await Navigator.push(context, MaterialPageRoute(
         builder: (context) =>
-            EditPage(index: index, callCase: 2, post: post,)));
+            EditPage(index: index, callCase: 2, post: post,))).whenComplete(_refreshAction());
+    //Navigator.pushNamed(context, '/adddatapage').whenComplete(retrieveData());
     // change edited
     if (editedPosts != null) {}
   }
@@ -203,7 +250,7 @@ class DetailPage extends StatelessWidget {
               icon: Icon(Icons.delete),
               color: Colors.white,
               onPressed: () {
-                Navigator.pop(context, index);
+                _checkDelete();
               },
             ),
           ],

@@ -21,6 +21,78 @@ class EditPageState extends State<EditPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    if(callCase == 1) {
+      titleController.text = '';
+      bodyController.text = '';
+    }
+    else {
+      titleController.text = post[index].title;
+      bodyController.text = post[index].body;
+    }
+  }
+
+
+  void _checkEdit() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: Text('Do you want to Edit this Post?',),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('CANCEL'),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('CONFIRM'),
+              onPressed: (){
+                Navigator.of(context).pop();
+                editThis(titleController.text, bodyController.text, index);
+                Navigator.pop(context, addedPost);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _checkadd() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: Text('Do you want to add this Post?',),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('CANCEL'),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('CONFIRM'),
+              onPressed: (){
+                Navigator.of(context).pop();
+                submit(titleController.text, bodyController.text);
+                Navigator.pop(context, addedPost);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
   Widget caseAppbar() {
     return callCase == 1 ? AppBar(title: Text('New Post'),
       actions: <Widget>[
@@ -28,8 +100,7 @@ class EditPageState extends State<EditPage> {
           icon: Icon(Icons.add),
           color: Colors.white,
           onPressed: () {
-            submit(titleController.text, bodyController.text);
-            Navigator.pop(context, addedPost);
+            _checkadd();
           },
         )
       ],
@@ -39,8 +110,7 @@ class EditPageState extends State<EditPage> {
           icon: Icon(Icons.border_color),
           color: Colors.white,
           onPressed: () {
-            editThis(titleController.text, bodyController.text, index);
-            Navigator.pop(context, addedPost);
+            _checkEdit();
           },
         )
       ],
