@@ -252,7 +252,6 @@ class _DetailPage extends State<DetailPage> {
     final Posts editedPosts = await Navigator.push(context, MaterialPageRoute(
         builder: (context) =>
             EditPage(index: index, callCase: 2, post: post,))).whenComplete(_refreshAction());
-    //Navigator.pushNamed(context, '/adddatapage').whenComplete(retrieveData());
     // change edited
     if (editedPosts != null) {}
   }
