@@ -47,13 +47,26 @@ class Posts {
     );
   }
 
+  Map toMap() {
+    var map = Map<String, dynamic>();
+    map['userId'] = userId;
+    map['id'] = id;
+    map['title'] = '$title';
+    map['body'] = '$body';
+
+    return map;
+  }
+
 }
 
-class HomePage extends StatefulWidget {
+
+class PostsLists extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  PostsListsState createState() => PostsListsState();
+
 }
-class _HomePageState extends State<HomePage> {
+
+class PostsListsState extends State<PostsLists> {
   List<Posts> posts = List();
 
   @override
@@ -69,7 +82,14 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  getPostLists() {
+    return posts;
+  }
 
+  _refreshAction() {
+    setState(() {
+    });
+  }
 
 
   SharedPreferences sharedPreferences;
@@ -80,89 +100,65 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  _openEditPage(BuildContext context) async {
+  _openAddPage(BuildContext context) async {
     final Posts receivedPosts = await Navigator.push(
-      context , MaterialPageRoute(builder: (context) => EditPage(callCase: 1,))
+        context , MaterialPageRoute(builder: (context) => EditPage(callCase: 1,))
     );
     posts.insert(0, receivedPosts);
+    _refreshAction();
   }
+  RandomColor _randomColor = RandomColor();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext postListContext) {
     return Scaffold(
       appBar:AppBar(
         title:Text('Posts'),
-          actions: <Widget>[
-            IconButton(
+        actions: <Widget>[
+          IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              _openEditPage(context);
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/setting');
-              },
-            ),
-          ],
-      ),
-      body: PostsLists(posts: posts,),
-    );
-
-  }
-
-}
-
-class PostsLists extends StatefulWidget {
-  final posts;
-  const PostsLists({ Key key, this.posts}) : super(key : key);
-
-  @override
-  PostsListsState createState() => PostsListsState(thePosts: posts);
-
-}
-
-class PostsListsState extends State<PostsLists> {
-  List<Posts> thePosts;
-
-  PostsListsState({this.thePosts});
-
-  RandomColor _randomColor = RandomColor();
-
-  _refreshAction() {
-    setState(() {
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: thePosts?.length ?? 0,
-        itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-            leading: Column(
-              children: <Widget>[
-                Icon(Icons.person,
-                color: _randomColor.randomColor(),),
-                Text('User'+thePosts[index].userId.toString()),
-              ],
-            ),
-            title: Text(thePosts[index].title),
-            subtitle: Text(thePosts[index].body),
-            onTap: (){
-              openDetailPage(context, thePosts, index);
+              _openAddPage(postListContext);
             },
-          );
-        }
+          ),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(postListContext).pushNamed('/setting');
+            },
+          ),
+        ],
+      ),
+      body: ListView.builder(
+          itemCount: posts?.length ?? 0,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              leading: Column(
+                children: <Widget>[
+                  Icon(Icons.person,
+                    color: _randomColor.randomColor(),),
+                  Text('User'+posts[index].userId.toString() ?? "0"),
+                ],
+              ),
+              title: Text(posts[index].title),
+              subtitle: Text(posts[index].body),
+              onTap: (){
+                openDetailPage(context, posts, index);
+              },
+            );
+          }
+      ),
     );
 
+
 }
-  openDetailPage(BuildContext context, List<Posts> post, index) async {
-    final indexB = await Navigator.push(context,
+  openDetailPage(BuildContext openDetailPageContext, List<Posts> post, index) async {
+    final indexB = await Navigator.push(openDetailPageContext,
         MaterialPageRoute(builder: (context) => DetailPage(post, index))
     );
-    post.removeAt(indexB);
+    if(indexB != null) {
+      post.removeAt(indexB);
+    }
   }
 
 
@@ -171,6 +167,8 @@ class PostsListsState extends State<PostsLists> {
 class DetailPage extends StatefulWidget {
   final List<Posts> post;
   final index;
+
+
 
   DetailPage(this.post, this.index);
 
@@ -184,6 +182,8 @@ class DetailPage extends StatefulWidget {
 class _DetailPage extends State<DetailPage> {
   final List<Posts> post;
   final index;
+
+  PostsListsState postList = PostsListsState();
 
   _DetailPage(this.post, this.index);
 
@@ -199,10 +199,12 @@ class _DetailPage extends State<DetailPage> {
     });
   }
 
+
+
   void _checkDelete() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext scaffoldContext) {
         return AlertDialog(
           title: Text('Alert'),
           content: Text('Do you want to Delete?',),
@@ -210,14 +212,20 @@ class _DetailPage extends State<DetailPage> {
             FlatButton(
               child: Text('CANCEL'),
               onPressed: (){
-                Navigator.of(context).pop();
+                Navigator.of(scaffoldContext).pop();
               },
             ),
             FlatButton(
               child: Text('CONFIRM'),
-              onPressed: (){
-                Navigator.of(context).pop();
-                Navigator.pop(context, index);
+              onPressed: () async {
+                bool isDeleted = await deletePost(index.toString());
+                Navigator.of(scaffoldContext).pop();
+                if(isDeleted){
+                  post.removeAt(index);
+                  Navigator.pop(scaffoldContext);
+                } else{
+                  Scaffold.of(scaffoldContext).showSnackBar(SnackBar(content: Text('failed to Delete!')));
+                }
               },
             ),
           ],
@@ -253,11 +261,15 @@ class _DetailPage extends State<DetailPage> {
         builder: (context) =>
             EditPage(index: index, callCase: 2, post: post,))).whenComplete(_refreshAction());
     // change edited
-    if (editedPosts != null) {}
+    if (editedPosts != null) {
+      setState(() {
+        post[index] = editedPosts;
+      });
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext detailPageContext) {
     return Scaffold(
         appBar: caseAppbar(),
       body: SingleChildScrollView(

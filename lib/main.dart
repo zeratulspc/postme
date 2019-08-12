@@ -8,7 +8,7 @@ import 'package:postme/edit.dart';
 
 final routes = {
   '/login': (BuildContext context) => LoginPage(),
-  '/home': (BuildContext context) => HomePage(),
+  '/home': (BuildContext context) => PostsLists(),
   '/Loading': (BuildContext context) => Loading(),
   '/checkPage': (BuildContext context) => SplashScreen(),
   '/setting' : (BuildContext context) => Setting(),
